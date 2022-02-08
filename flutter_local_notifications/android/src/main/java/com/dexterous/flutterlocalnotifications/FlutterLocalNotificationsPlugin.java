@@ -203,31 +203,30 @@ public class FlutterLocalNotificationsPlugin
     Intent intent = getLaunchIntent(context);
     intent.setAction(SELECT_NOTIFICATION);
     intent.putExtra(PAYLOAD, notificationDetails.payload);
-    //For Moengage
-         try {
+    // For Moengage
+    try {
 
-            HashMap<String, String> map = new HashMap<String, String>();
-            JSONObject jObject = null;
-            jObject = new JSONObject(notificationDetails.payload);
-            Iterator<?> keys = jObject.keys();
-            Bundle bundle = new Bundle();
-            while( keys.hasNext() ){
-                String key = (String)keys.next();
-                String value = jObject.getString(key);
-                map.put(key, value);
+      HashMap<String, String> map = new HashMap<String, String>();
+      JSONObject jObject = null;
+      jObject = new JSONObject(notificationDetails.payload);
+      Iterator<?> keys = jObject.keys();
+      Bundle bundle = new Bundle();
+      while (keys.hasNext()) {
+        String key = (String) keys.next();
+        String value = jObject.getString(key);
+        map.put(key, value);
 
-                bundle.putSerializable(key, value);
-            }
+        bundle.putSerializable(key, value);
+      }
 
-            intent.putExtras(bundle);
+      intent.putExtras(bundle);
 
-            MoEPushHelper.getInstance().logNotificationReceived(context, map);
+      MoEPushHelper.getInstance().logNotificationReceived(context, map);
 
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        //For Moengage
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    // For Moengage
     int flags = PendingIntent.FLAG_UPDATE_CURRENT;
     if (VERSION.SDK_INT >= VERSION_CODES.M) {
       flags |= PendingIntent.FLAG_IMMUTABLE;
