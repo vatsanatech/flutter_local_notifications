@@ -1,10 +1,31 @@
+# [10.0.0-dev.10]
+
+* [iOS][macOS] Added support for specifying interruption level of notifications and ability to request critical alert permissions. Thanks to the PR from [maprohu)](https://github.com/maprohu)
+
+# [10.0.0-dev.9]
+
+* [iOS] Fixed issue [1506](https://github.com/MaikuB/flutter_local_notifications/issues/1506) where the plugin was trying to process responses to notifications created outside of the plugin (e.g. those from Firebase) and resulted in an exception
+* [macOS] **Breaking change** the `requestPermissions()` method of the `MacOSFlutterLocalNotificationsPlugin` class now only accepts non-nullable parameters that default to `false`. This makes it consistent with the iOS implementation of the plugin
+
+# [10.0.0-dev.8]
+
+* Includes fix from 9.3.2
+
+# [10.0.0-dev.7]
+
+* Includes fix from 9.3.1
+
+# [10.0.0-dev.6]
+
+* [Android] Fixed issue [1476](https://github.com/MaikuB/flutter_local_notifications/issues/1476) where crash can occur on Android 12 as mutability flags weren't being applied to intents associated with notification actions
+
 # [10.0.0-dev.5]
 
-* [Android] Fix error where plugin was lookup to the notification action callback and failed to find it as it was doing before the Flutter engine was initialised
+* [Android] Fixed error where plugin was lookup to the notification action callback and failed to find it as it was doing before the Flutter engine was initialised
 
 # [10.0.0-dev.4]
 
-* [Android] Fix Android 12 specific issue related to notification acitons by adding exported flag to the receiver used to process actions
+* [Android] Fixed Android 12 specific issue related to notification actions by adding exported flag to the receiver used to process actions
 
 # [10.0.0-dev.3]
 
@@ -27,7 +48,23 @@
   * `INVALID_SOUND` -> `invalid_sound`
   * `INVALID_LED_DETAILS` -> `invalid_led_details`
   * `GET_ACTIVE_NOTIFICATIONS_ERROR_CODE` -> `unsupported_os_version`
-  * `GET_NOTIFICATION_CHANNELS_ERROR_CODE` -> getNotificationChannelsError`
+  * `GET_NOTIFICATION_CHANNELS_ERROR_CODE` -> `getNotificationChannelsError`
+  
+# [9.3.3]
+* [macOS] Fixed issue [1507](https://github.com/MaikuB/flutter_local_notifications/issues/1507) where calling the `requestPermissions()` method of the `MacOSFlutterLocalNotificationsPlugin` class led to a crash. This will be coalesced to assume that the `boolean` parameters around the requested permissions default to `false` to be consistent with the iOS implementation. Note that in 10.0.0 the method will have a breaking change so that these parameters are non-nullable
+
+# [9.3.2]
+
+* Fix issue [1485](https://github.com/MaikuB/flutter_local_notifications/issues/1485) where the addition of `colorized` property caused backwards compatibility issues with previously scheduled notifications as this would be null when deserialised from shared preferences
+
+# [9.3.1]
+
+* Fix issue [1479](https://github.com/MaikuB/flutter_local_notifications/issues/1479) that could cause compilation issue on the web by removing `dart:ffi` import
+
+# [9.3.0]
+
+* [Android] Updated how scheduled notifications are saved to shared preferences so it is done in the background. This is to fix issue [1378](https://github.com/MaikuB/flutter_local_notifications/issues/1378) where `pendingNotificationRequests` method may not report the correct number of scheduled notifications if it is invoked before the data had been saved to shared preferences
+* [Android] Added `colorized` property to `AndroidNotificationDetails` class. This can be used to apply a background colour to the notification but for most styles, this only works if a foreground service was used. Example app has been updated to demonstrate its usage. Thanks to the PR from [benechiu](https://github.com/benechiu)
 
 # [9.2.0]
 
@@ -960,57 +997,3 @@ Please note that there are a number of breaking changes in this release to impro
 ## [0.0.1]
 
 *  Initial release
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

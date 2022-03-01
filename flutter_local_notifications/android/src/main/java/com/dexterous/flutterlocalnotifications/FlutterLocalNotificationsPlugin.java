@@ -1,5 +1,6 @@
 package com.dexterous.flutterlocalnotifications;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -268,9 +269,20 @@ public class FlutterLocalNotificationsPlugin
                 .putExtra(ActionBroadcastReceiver.ACTION_ID, action.id)
                 .putExtra(CANCEL_NOTIFICATION, action.cancelNotification)
                 .putExtra(PAYLOAD, notificationDetails.payload);
+        int actionFlags = PendingIntent.FLAG_ONE_SHOT;
+        if (action.actionInputs == null || action.actionInputs.isEmpty()) {
+          if (VERSION.SDK_INT >= VERSION_CODES.M) {
+            actionFlags |= PendingIntent.FLAG_IMMUTABLE;
+          }
+        } else {
+          if (VERSION.SDK_INT >= VERSION_CODES.S) {
+            actionFlags |= PendingIntent.FLAG_MUTABLE;
+          }
+        }
+
+        @SuppressLint("UnspecifiedImmutableFlag")
         final PendingIntent actionPendingIntent =
-            PendingIntent.getBroadcast(
-                context, requestCode++, actionIntent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent.getBroadcast(context, requestCode++, actionIntent, actionFlags);
 
         final Spannable actionTitleSpannable = new SpannableString(action.title);
         if (action.titleColor != null) {
@@ -317,6 +329,10 @@ public class FlutterLocalNotificationsPlugin
             context, notificationDetails.largeIcon, notificationDetails.largeIconBitmapSource));
     if (notificationDetails.color != null) {
       builder.setColor(notificationDetails.color.intValue());
+    }
+
+    if (notificationDetails.colorized != null) {
+      builder.setColorized(notificationDetails.colorized);
     }
 
     if (notificationDetails.showWhen != null) {
@@ -440,8 +456,7 @@ public class FlutterLocalNotificationsPlugin
     SharedPreferences sharedPreferences =
         context.getSharedPreferences(SCHEDULED_NOTIFICATIONS, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putString(SCHEDULED_NOTIFICATIONS, json);
-    editor.apply();
+    editor.putString(SCHEDULED_NOTIFICATIONS, json).apply();
   }
 
   static void removeNotificationFromCache(Context context, Integer notificationId) {
@@ -549,14 +564,6 @@ public class FlutterLocalNotificationsPlugin
     AlarmManagerCompat.setExactAndAllowWhileIdle(
         alarmManager, AlarmManager.RTC_WAKEUP, notificationTriggerTime, pendingIntent);
     saveScheduledNotification(context, notificationDetails);
-  }
-
-  private static PendingIntent getActivityPendingIntent(Context context, int id, Intent intent) {
-    int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-    if (VERSION.SDK_INT >= VERSION_CODES.M) {
-      flags |= PendingIntent.FLAG_IMMUTABLE;
-    }
-    return PendingIntent.getActivity(context, id, intent, flags);
   }
 
   private static PendingIntent getBroadcastPendingIntent(Context context, int id, Intent intent) {
@@ -1515,8 +1522,7 @@ public class FlutterLocalNotificationsPlugin
     SharedPreferences sharedPreferences =
         applicationContext.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putString(DEFAULT_ICON, defaultIcon);
-    editor.apply();
+    editor.putString(DEFAULT_ICON, defaultIcon).apply();
     result.success(true);
   }
 

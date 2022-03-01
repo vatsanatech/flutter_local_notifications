@@ -1,3 +1,4 @@
+import 'interruption_level.dart';
 import 'notification_attachment.dart';
 
 /// Configures notification details specific to Darwin-based operation systems
@@ -14,6 +15,7 @@ class DarwinNotificationDetails {
     this.subtitle,
     this.threadIdentifier,
     this.categoryIdentifier,
+    this.interruptionLevel,
   });
 
   /// Display an alert when the notification is triggered while app is
@@ -84,4 +86,11 @@ class DarwinNotificationDetails {
   /// This must refer to a [DarwinNotificationCategory] identifier configured
   /// via [InitializationSettings].
   final String? categoryIdentifier;
+
+  /// The interruption level that indicates the priority and
+  /// delivery timing of a notification.
+  ///
+  /// This property is only applicable to iOS 15.0 and macOS 12.0 or newer.
+  /// https://developer.apple.com/documentation/usernotifications/unnotificationcontent/3747256-interruptionlevel
+  final InterruptionLevel? interruptionLevel;
 }
