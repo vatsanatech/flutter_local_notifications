@@ -28,7 +28,6 @@ A cross platform plugin for displaying local notifications.
    - [General setup](#general-setup)
    - [Handling notifications whilst the app is in the foreground](#handling-notifications-whilst-the-app-is-in-the-foreground)
 - **[❓ Usage](#-usage)**
-   - [Notification Actions](#notification-actions)
    - [Example app](#example-app)
    - [API reference](#api-reference)
 - **[Initialisation](#initialisation)**
@@ -49,7 +48,7 @@ A cross platform plugin for displaying local notifications.
 * **Android 4.1+**. Uses the [NotificationCompat APIs](https://developer.android.com/reference/androidx/core/app/NotificationCompat) so it can be run older Android devices
 * **iOS 8.0+**. On iOS versions older than 10, the plugin will use the UILocalNotification APIs. The [UserNotification APIs](https://developer.apple.com/documentation/usernotifications) (aka the User Notifications Framework) is used on iOS 10 or newer.
 * **macOS 10.11+**. On macOS versions older than 10.14, the plugin will use the [NSUserNotification APIs](https://developer.apple.com/documentation/foundation/nsusernotification). The [UserNotification APIs](https://developer.apple.com/documentation/usernotifications) (aka the User Notifications Framework) is used on macOS 10.14 or newer.
-* **Linux**. Uses the [Desktop Notifications Specification](https://developer.gnome.org/notification-spec/).
+* **Linux**. Uses the [Desktop Notifications Specification](https://specifications.freedesktop.org/notification-spec/).
 
 ## ✨ Features
 
@@ -274,130 +273,6 @@ void onDidReceiveLocalNotification(
 
 Before going on to copy-paste the code snippets in this section, double-check you have configured your application correctly.
 If you encounter any issues please refer to the API docs and the sample code in the `example` directory before opening a request on Github.
-
-### Notification Actions
-
-Notifications can now contain actions. These actions may be selected by the user when a App is sleeping or terminated and will wake up your app. However, it may not wake up the user-visible part of your App; but only the part of it which runs in the background. 
-
-This plugin contains handlers for iOS & Android to handle these cases and will allow you to specify a Dart entry point (a function).
-
-When the user selects a action, the plugin will start a **separate Flutter Engine** which only exists to execute this callback.
-
-**Configuration**:
-
-*Android* does not require any configuration.
-
-*iOS* will require a few steps:
-
-Adjust `AppDelegate.m` and set the plugin registrant callback:
-
-Add this function anywhere in AppDelegate.m:
-``` objc
-void registerPlugins(NSObject<FlutterPluginRegistry>* registry) {
-    [GeneratedPluginRegistrant registerWithRegistry:registry];
-}
-```
-
-Extend `didFinishLaunchingWithOptions` and register the callback:
-
-``` objc
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [GeneratedPluginRegistrant registerWithRegistry:self];
-
-    // Add this method    
-    [FlutterLocalNotificationsPlugin setPluginRegistrantCallback:registerPlugins];
-}
-```
-
-iOS Notification actions need to be configured before the App is started, using the `initialize` method:
-
-``` dart
-final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(
-    // ...
-    notificationCategories: [
-        const IOSNotificationCategory(
-            'demoCategory',
-            <IOSNotificationAction>[
-                IOSNotificationAction('id_1', 'Action 1'),
-                IOSNotificationAction(
-                'id_2',
-                'Action 2',
-                options: <IOSNotificationActionOption>{
-                    IOSNotificationActionOption.destructive,
-                },
-                ),
-                IOSNotificationAction(
-                'id_3',
-                'Action 3',
-                options: <IOSNotificationActionOption>{
-                    IOSNotificationActionOption.foreground,
-                },
-                ),
-            ],
-            options: <IOSNotificationCategoryOption>{
-                IOSNotificationCategoryOption.hiddenPreviewShowTitle,
-            },
-        )
-],
-```
-
-On iOS, the notification category will define which actions are availble. On Android, you can put the actions directly in the Notification object.
-
-**Usage**:
-
-You need to configure a **top level**, **static** method which will handle the action:
-
-``` dart
-void notificationTapBackground(String id) {
-  print('notification action tapped: $id');
-}
-```
-
-The passed `id` parameter is the same specified in `NotificationAction`. Remember this function runs in a separate isolate! You will need to use a different mechanism to communicate with the main App.
-
-Accessing plugins will work; however in particular on Android there is **no** access to the `Activity` context which means some plugins (like `url_launcher`) will require additional flags to start the main `Activity` again.
-
-Specify this function as a parameter in the `initialize` method of this plugin:
-
-``` dart
-await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onSelectNotification: (String payload) async {
-        // ...
-    },
-    backgroundHandler: notificationTapBackground,
-);
-```
-
-**Specifying Actions on notifications**:
-
-The notification actions are platform specifics and you have to specify them differently for each platform.
-
-On iOS, the actions are defined on a category, please see the configuration section for details.
-
-On Android, the actions are configured directly on the notification.
-
-``` dart
-Future<void> _showNotificationWithActions() async {
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-    '...',
-    '...',
-    '...',
-    actions: <AndroidNotificationAction>[
-      AndroidNotificationAction('id_1', 'Action 1'),
-      AndroidNotificationAction('id_2', 'Action 2'),
-      AndroidNotificationAction('id_3', 'Action 3'),
-    ],
-  );
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.show(
-      0, '...', '...', platformChannelSpecifics);
-}
-```
-
-Each notification will have a internal ID & an public Action title.
 
 ### Example app
 
