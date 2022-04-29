@@ -1626,6 +1626,7 @@ public class FlutterLocalNotificationsPlugin
         }
 
         activeNotificationPayload.put("groupKey", notification.getGroup());
+        activeNotificationPayload.put("tag", activeNotification.getTag());
         activeNotificationPayload.put(
             "title", notification.extras.getCharSequence("android.title"));
         activeNotificationPayload.put("body", notification.extras.getCharSequence("android.text"));

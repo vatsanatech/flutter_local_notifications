@@ -403,6 +403,7 @@ class AndroidFlutterLocalNotificationsPlugin
               a['channelId'],
               a['title'],
               a['body'],
+              tag: a['tag'],
             ))
         .toList();
   }
@@ -544,7 +545,7 @@ class IOSFlutterLocalNotificationsPlugin
   /// [scheduledDate] is interpreted. See official docs at
   /// https://developer.apple.com/documentation/uikit/uilocalnotification/1616659-timezone
   /// for more details. Note that due to this limited support, it's likely that
-  /// on older iOS devices, there will still be issues with daylight savings
+  /// on older iOS devices, there will still be issues with daylight saving time
   /// except for when the time zone used in the [scheduledDate] matches the
   /// device's time zone and [uiLocalNotificationDateInterpretation] is set to
   /// [UILocalNotificationDateInterpretation.wallClockTime].
