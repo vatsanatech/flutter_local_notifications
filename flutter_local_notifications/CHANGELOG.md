@@ -1,3 +1,21 @@
+# [9.5.3+1]
+
+* Updated example app with to use updated Proguard rules for GSON
+* Update readme about GSON's Proguard rules to recommend referring to the rules on GSON's repository
+* Move note in readme about how `onSelectNotification` won't be called when an app is launched by a notification so it's more visible
+
+# [9.5.3]
+
+* [Android] bumped gson dependency to 2.8.9 that fixes [CVE-2022-25647](https://github.com/advisories/GHSA-4jrv-ppp4-jm57)
+
+# [9.5.2]
+
+* [macOS] fixed issue [1585](https://github.com/MaikuB/flutter_local_notifications/issues/1585) where plugin causes a crash when a remote/push notification (e.g. via FCM) occurs
+
+# [9.5.1]
+
+* [Android] fixed issue when calling `getActiveNotificationMessagingStyle()` to get messaging style information for a notification with a tag. Thanks to PR from [Simon Ser](https://github.com/emersion)
+
 # [9.5.0]
 
 * [Android] added `getActiveNotificationMessagingStyle()` method to the `AndroidFlutterLocalNotificationsPlugin` class. This allows for getting the messaging style information of an active notification e.g. to append a message to an existing notification. Thanks to the PR from [Simon Ser](https://github.com/emersion)
